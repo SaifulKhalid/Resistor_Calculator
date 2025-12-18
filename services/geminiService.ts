@@ -12,9 +12,8 @@ const prepareBase64 = (dataUrl: string) => {
 export const analyzeResistorImage = async (base64Image: string): Promise<ResistorResult | null> => {
   const apiKey = process.env.API_KEY;
 
-  // Deployment guard to help users debug environment variable issues
   if (!apiKey || apiKey === "undefined" || apiKey.length < 10) {
-    throw new Error("Missing API_KEY. Please ensure the 'API_KEY' environment variable is set in your deployment dashboard.");
+    throw new Error("Missing API_KEY. Please ensure the 'API_KEY' environment variable is set in your Vercel Project Settings.");
   }
 
   const ai = new GoogleGenAI({ apiKey });
@@ -30,17 +29,17 @@ export const analyzeResistorImage = async (base64Image: string): Promise<Resisto
     4. Provide a human-readable formatted value (e.g., 10kΩ, 470Ω).
 
     EXPERT KNOWLEDGE:
+    - Axial resistors follow standard E12/E24 values. Use this to clarify ambiguous colors.
     - If the resistor is vertical, read from top to bottom.
     - If horizontal, read from left to right.
-    - Differentiate carefully between Brown/Red/Orange and Blue/Violet in varying light.
-    - Validate the final value against standard E12/E24 resistor series.
+    - Differentiate carefully between Brown/Red/Orange in varying light.
 
     Respond in valid JSON only.
   `;
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-3-pro-preview', // Pro model is required for high-precision visual component analysis
+      model: 'gemini-3-flash-preview', // Switched to Flash to avoid Pro model quota limits (429 errors)
       contents: [
         {
           parts: [
@@ -55,7 +54,7 @@ export const analyzeResistorImage = async (base64Image: string): Promise<Resisto
         }
       ],
       config: {
-        thinkingConfig: { thinkingBudget: 16000 }, // High budget for deep reasoning on color spectrums
+        thinkingConfig: { thinkingBudget: 8000 }, // Flash-optimized reasoning budget
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
@@ -63,19 +62,19 @@ export const analyzeResistorImage = async (base64Image: string): Promise<Resisto
             bands: {
               type: Type.ARRAY,
               items: { type: Type.STRING },
-              description: "The identified 3 color bands from start to multiplier"
+              description: "The identified 3 color bands"
             },
             resistance_ohms: {
               type: Type.NUMBER,
-              description: "The final numeric resistance value"
+              description: "Numeric resistance value"
             },
             formatted_value: {
               type: Type.STRING,
-              description: "The formatted string value (e.g., '1.5kΩ')"
+              description: "Formatted value (e.g., '1.5kΩ')"
             },
             confidence: {
               type: Type.NUMBER,
-              description: "Confidence percentage (0-100) based on visual clarity"
+              description: "Confidence percentage (0-100)"
             }
           },
           required: ["bands", "resistance_ohms", "formatted_value", "confidence"]
@@ -91,10 +90,17 @@ export const analyzeResistorImage = async (base64Image: string): Promise<Resisto
       return null;
     }
   } catch (error: any) {
-    console.error("Gemini Expert Analysis Error:", error);
-    if (error?.message?.includes("API_KEY_INVALID")) {
-      throw new Error("The provided API key is invalid or has expired.");
+    console.error("Gemini Error:", error);
+    
+    // Friendly error for Rate Limiting / Quota
+    if (error?.message?.includes("429") || error?.message?.includes("RESOURCE_EXHAUSTED")) {
+      throw new Error("The AI service is currently at capacity or quota-limited. Please wait 15-30 seconds and try again.");
     }
-    throw error;
+    
+    if (error?.message?.includes("API_KEY_INVALID")) {
+      throw new Error("Invalid API Key. Please verify your environment variables.");
+    }
+    
+    throw new Error(error.message || "An error occurred during visual analysis.");
   }
 };
