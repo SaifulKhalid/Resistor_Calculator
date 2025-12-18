@@ -10,31 +10,37 @@ const prepareBase64 = (dataUrl: string) => {
 };
 
 export const analyzeResistorImage = async (base64Image: string): Promise<ResistorResult | null> => {
-  // Directly use process.env.API_KEY as per the strict structural guidelines.
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const apiKey = process.env.API_KEY;
+
+  // Deployment guard to help users debug environment variable issues
+  if (!apiKey || apiKey === "undefined" || apiKey.length < 10) {
+    throw new Error("Missing API_KEY. Please ensure the 'API_KEY' environment variable is set in your deployment dashboard.");
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
   
   const prompt = `
-    You are an expert in electronics and computer vision.
-    You are analyzing an image captured from a smartphone camera.
+    You are a world-class senior electronics engineer and computer vision expert.
+    Analyze this smartphone image of an axial resistor.
 
     TASK:
-    Identify the 4-band axial resistor in the image.
-    Determine the first 3 color bands from left-to-right (Digit 1, Digit 2, Multiplier).
-    Calculate the total resistance in Ohms (Ω).
+    1. Identify the first 3 color bands (Significant Digit 1, Significant Digit 2, Multiplier).
+    2. Ignore the 4th band (Tolerance, usually Gold, Silver, or Brown on the far right).
+    3. Calculate the total resistance in Ohms (Ω).
+    4. Provide a human-readable formatted value (e.g., 10kΩ, 470Ω).
 
-    EXPERT GUIDANCE:
-    - Band 1: First significant figure.
-    - Band 2: Second significant figure.
-    - Band 3: Multiplier (Power of 10).
-    - Axial resistors usually follow standard series (E12, E24). Use context to refine ambiguous colors (e.g., Red vs. Orange).
-    - Ignore the tolerance band (Gold, Silver, or Brown on the far right).
+    EXPERT KNOWLEDGE:
+    - If the resistor is vertical, read from top to bottom.
+    - If horizontal, read from left to right.
+    - Differentiate carefully between Brown/Red/Orange and Blue/Violet in varying light.
+    - Validate the final value against standard E12/E24 resistor series.
 
     Respond in valid JSON only.
   `;
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+      model: 'gemini-3-pro-preview', // Pro model is required for high-precision visual component analysis
       contents: [
         {
           parts: [
@@ -49,7 +55,7 @@ export const analyzeResistorImage = async (base64Image: string): Promise<Resisto
         }
       ],
       config: {
-        thinkingConfig: { thinkingBudget: 4000 }, // Enable reasoning to resolve visual ambiguities
+        thinkingConfig: { thinkingBudget: 16000 }, // High budget for deep reasoning on color spectrums
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
@@ -57,19 +63,19 @@ export const analyzeResistorImage = async (base64Image: string): Promise<Resisto
             bands: {
               type: Type.ARRAY,
               items: { type: Type.STRING },
-              description: "The list of the first three color band names"
+              description: "The identified 3 color bands from start to multiplier"
             },
             resistance_ohms: {
               type: Type.NUMBER,
-              description: "Total resistance in ohms"
+              description: "The final numeric resistance value"
             },
             formatted_value: {
               type: Type.STRING,
-              description: "Human-readable value (e.g., 4.7kΩ)"
+              description: "The formatted string value (e.g., '1.5kΩ')"
             },
             confidence: {
               type: Type.NUMBER,
-              description: "AI confidence level (0-100)"
+              description: "Confidence percentage (0-100) based on visual clarity"
             }
           },
           required: ["bands", "resistance_ohms", "formatted_value", "confidence"]
@@ -85,10 +91,9 @@ export const analyzeResistorImage = async (base64Image: string): Promise<Resisto
       return null;
     }
   } catch (error: any) {
-    console.error("Gemini API Error:", error);
-    // Specialized error handling for potential project/key availability issues
-    if (error?.message?.includes("Requested entity was not found")) {
-      throw new Error("System configuration error. The expert vision service is currently unavailable.");
+    console.error("Gemini Expert Analysis Error:", error);
+    if (error?.message?.includes("API_KEY_INVALID")) {
+      throw new Error("The provided API key is invalid or has expired.");
     }
     throw error;
   }
