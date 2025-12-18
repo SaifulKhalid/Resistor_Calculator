@@ -7,12 +7,32 @@
     <title>Resistor Lens - AI Scanner</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap');
+        
         body {
             background-color: #050810;
             color: #f8fafc;
             margin: 0;
             overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
         }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050810;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+
+        .mono { font-family: 'JetBrains Mono', monospace; }
     </style>
     <script type="importmap">
     {
@@ -28,7 +48,6 @@
 </head>
 <body>
     <div id="root"></div>
-    <!-- Entry point for the React application -->
     <script type="module" src="index.tsx"></script>
 </body>
 </html>
