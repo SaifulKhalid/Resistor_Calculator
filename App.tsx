@@ -51,7 +51,7 @@ const App: React.FC = () => {
             <h1 className="text-2xl font-black tracking-tight text-white uppercase italic">Resistor Lens <span className="text-indigo-500 font-normal not-italic">Pro</span></h1>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-              <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">System Ready • Computer Vision Active</p>
+              <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Powered by LabDDB.site</p>
             </div>
           </div>
         </div>
@@ -122,10 +122,10 @@ const App: React.FC = () => {
       <footer className="mt-auto py-10 flex flex-col items-center gap-2">
         <div className="flex items-center gap-4 text-slate-600">
            <span className="w-8 h-px bg-slate-800"></span>
-           <span className="text-[10px] font-bold uppercase tracking-widest">Electronic Vision Suite</span>
+           <span className="text-[10px] font-bold uppercase tracking-widest">Build | Share | Grow with LabDDB</span>
            <span className="w-8 h-px bg-slate-800"></span>
         </div>
-        <p className="text-slate-700 text-[9px] font-mono tracking-tighter">INTELLIGENCE PROVIDED BY GEMINI 3 FLASH AI</p>
+        <p className="text-slate-700 text-[9px] font-mono tracking-tighter">Built for EEECU 💚</p>
       </footer>
     </div>
   );
