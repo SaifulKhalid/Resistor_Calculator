@@ -10,28 +10,24 @@ const prepareBase64 = (dataUrl: string) => {
 };
 
 export const analyzeResistorImage = async (base64Image: string): Promise<ResistorResult | null> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
+  // Directly use process.env.API_KEY as per the strict structural guidelines.
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const prompt = `
     You are an expert in electronics and computer vision.
     You are analyzing an image captured from a smartphone camera.
-    The image shows a single axial resistor, intentionally aligned horizontally from left to right.
 
-    TASK
-    Detect the resistor in the image.
-    Identify the first three color bands from left to right.
-    Ignore tolerance completely.
-    Calculate the resistance value using the standard 4-band resistor color code:
-    Band 1 = first digit
-    Band 2 = second digit
-    Band 3 = multiplier
+    TASK:
+    Identify the 4-band axial resistor in the image.
+    Determine the first 3 color bands from left-to-right (Digit 1, Digit 2, Multiplier).
+    Calculate the total resistance in Ohms (Ω).
 
-    IMPORTANT RULES
-    Assume only one resistor is present.
-    If colors are unclear due to lighting or blur, still make the best possible estimate.
-    Do NOT guess band order randomly — assume left-to-right orientation.
-    Use standard resistor colors only:
-    Black, Brown, Red, Orange, Yellow, Green, Blue, Violet, Grey, White, Gold, Silver.
+    EXPERT GUIDANCE:
+    - Band 1: First significant figure.
+    - Band 2: Second significant figure.
+    - Band 3: Multiplier (Power of 10).
+    - Axial resistors usually follow standard series (E12, E24). Use context to refine ambiguous colors (e.g., Red vs. Orange).
+    - Ignore the tolerance band (Gold, Silver, or Brown on the far right).
 
     Respond in valid JSON only.
   `;
@@ -53,6 +49,7 @@ export const analyzeResistorImage = async (base64Image: string): Promise<Resisto
         }
       ],
       config: {
+        thinkingConfig: { thinkingBudget: 4000 }, // Enable reasoning to resolve visual ambiguities
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
@@ -60,19 +57,19 @@ export const analyzeResistorImage = async (base64Image: string): Promise<Resisto
             bands: {
               type: Type.ARRAY,
               items: { type: Type.STRING },
-              description: "The list of the first three band colors"
+              description: "The list of the first three color band names"
             },
             resistance_ohms: {
               type: Type.NUMBER,
-              description: "Calculated numeric value in Ohms"
+              description: "Total resistance in ohms"
             },
             formatted_value: {
               type: Type.STRING,
-              description: "Human-readable value (e.g., 10kΩ)"
+              description: "Human-readable value (e.g., 4.7kΩ)"
             },
             confidence: {
               type: Type.NUMBER,
-              description: "Confidence score from 0 to 100"
+              description: "AI confidence level (0-100)"
             }
           },
           required: ["bands", "resistance_ohms", "formatted_value", "confidence"]
@@ -87,8 +84,12 @@ export const analyzeResistorImage = async (base64Image: string): Promise<Resisto
       console.error("Failed to parse JSON response:", text);
       return null;
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Gemini API Error:", error);
+    // Specialized error handling for potential project/key availability issues
+    if (error?.message?.includes("Requested entity was not found")) {
+      throw new Error("System configuration error. The expert vision service is currently unavailable.");
+    }
     throw error;
   }
 };
