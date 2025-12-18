@@ -1,0 +1,7 @@
+{
+  "name": "Resistor Lens",
+  "description": "An AI-powered axial resistor color code scanner that identifies resistance values from images using computer vision.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
