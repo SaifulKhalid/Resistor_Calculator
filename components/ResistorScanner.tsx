@@ -65,7 +65,7 @@ const ResistorScanner: React.FC<Props> = ({ onCapture, isProcessing }) => {
         
         {isInitializing && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950 z-20">
-             <div className="w-8 h-8 border-2 border-indigo-500/10 border-t-indigo-500 rounded-full animate-spin"></div>
+             <div className="w-8 h-8 border-2 border-emerald-500/10 border-t-emerald-500 rounded-full animate-spin"></div>
           </div>
         )}
 
@@ -74,7 +74,7 @@ const ResistorScanner: React.FC<Props> = ({ onCapture, isProcessing }) => {
             <ShieldAlert className="w-10 h-10 text-rose-500 mb-4" />
             <p className="text-slate-400 text-sm mb-6">Camera access is required for live scanning.</p>
             <div className="flex gap-3">
-              <button onClick={startCamera} className="px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-indigo-500 flex items-center gap-2 transition-all">
+              <button onClick={startCamera} className="px-5 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-emerald-500 flex items-center gap-2 transition-all">
                 <RefreshCcw size={16} /> Retry
               </button>
               <label className="px-5 py-2.5 bg-slate-800 text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-slate-700 flex items-center gap-2 cursor-pointer transition-all">

@@ -47,7 +47,7 @@ const ManualSelector: React.FC<Props> = ({ onChange }) => {
         <select 
           value={bands[index]} 
           onChange={(e) => updateBand(index, e.target.value)}
-          className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-3 text-xs font-bold text-white appearance-none focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer"
+          className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-3 text-xs font-bold text-white appearance-none focus:ring-2 focus:ring-emerald-500 outline-none cursor-pointer"
         >
           {options.map(c => (
             <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>
@@ -78,8 +78,6 @@ const ManualSelector: React.FC<Props> = ({ onChange }) => {
             key={c}
             onClick={() => {
               // Intelligently decide which band to update based on selection
-              // For simplicity, we'll just show all colors as a quick-picker for the currently selected band logic
-              // but here we just show them as a reference.
             }}
             className="h-8 rounded-lg border border-white/5 shadow-lg transition-transform hover:scale-110"
             style={{ backgroundColor: ColorMap[c] }}

@@ -1,6 +1,12 @@
 {
-  "name": "Resistor Lens",
-  "description": "An AI-powered axial resistor color code scanner that identifies resistance values from images using computer vision.",
+  "name": "Resistor Lens Pro",
+  "short_name": "Resistor Lens",
+  "description": "Professional AI-powered axial resistor color code identifier and calculator. Identify resistance values using real-time computer vision.",
+  "categories": [
+    "utilities",
+    "productivity",
+    "education"
+  ],
   "requestFramePermissions": [
     "camera"
   ]

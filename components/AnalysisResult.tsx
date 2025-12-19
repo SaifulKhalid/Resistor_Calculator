@@ -9,7 +9,7 @@ interface Props {
 
 const AnalysisResult: React.FC<Props> = ({ result }) => {
   const getStatus = (conf: number) => {
-    if (result.isManual) return { label: 'Manual Input', color: 'text-indigo-400', bg: 'bg-indigo-400/10', border: 'border-indigo-400/30', icon: <Settings size={14} /> };
+    if (result.isManual) return { label: 'Manual Input', color: 'text-emerald-400', bg: 'bg-emerald-400/10', border: 'border-emerald-400/30', icon: <Settings size={14} /> };
     if (conf >= 80) return { label: 'High Precision', color: 'text-emerald-400', bg: 'bg-emerald-400/10', border: 'border-emerald-400/30', icon: <CheckCircle2 size={14} /> };
     if (conf >= 60) return { label: 'Verify Values', color: 'text-amber-400', bg: 'bg-amber-400/10', border: 'border-amber-400/30', icon: <AlertCircle size={14} /> };
     return { label: 'Low Confidence', color: 'text-rose-400', bg: 'bg-rose-400/10', border: 'border-rose-400/30', icon: <HelpCircle size={14} /> };
@@ -78,7 +78,7 @@ const AnalysisResult: React.FC<Props> = ({ result }) => {
           <span className="text-white font-bold">{result.bands[0]}</span>
           <span className="text-white font-bold">{result.bands[1]}</span>
           <span className="mx-1">×</span>
-          <span className="text-indigo-400 font-bold">{result.bands[2]}</span>
+          <span className="text-emerald-400 font-bold">{result.bands[2]}</span>
           <ArrowRight size={10} className="mx-1" />
           <span className="text-white font-black">{result.formatted_value}</span>
         </div>

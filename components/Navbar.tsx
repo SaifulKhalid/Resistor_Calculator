@@ -21,13 +21,9 @@ const Navbar: React.FC = () => {
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center gap-2">
             <a href="https://labddb.site" className="flex items-center gap-2 group">
-              <img 
-                src="https://labddb.site/logo.png" 
-                alt="Lab DDB Logo" 
-                className="w-10 h-10 object-contain group-hover:scale-110 transition-transform"
-              />
+             
               <span className="text-white font-black tracking-tighter text-xl uppercase italic">
-                Lab <span className="text-indigo-500 not-italic">DDB</span>
+                Lab <span className="text-emerald-500 not-italic">DDB</span>
               </span>
             </a>
           </div>
@@ -41,7 +37,7 @@ const Navbar: React.FC = () => {
                     href={item.href}
                     className="text-slate-400 hover:text-white flex items-center gap-2 text-sm font-bold uppercase tracking-wider transition-all hover:translate-y-[-1px]"
                   >
-                    <span className="text-indigo-500/50">
+                    <span className="text-emerald-500/50">
                       {item.icon}
                     </span>
                     {item.label}
@@ -74,10 +70,10 @@ const Navbar: React.FC = () => {
             <li key={item.label}>
               <a
                 href={item.href}
-                className="flex items-center gap-4 px-4 py-3 text-slate-300 hover:text-white hover:bg-indigo-600/10 rounded-xl transition-all font-bold uppercase tracking-widest text-xs"
+                className="flex items-center gap-4 px-4 py-3 text-slate-300 hover:text-white hover:bg-emerald-600/10 rounded-xl transition-all font-bold uppercase tracking-widest text-xs"
                 onClick={() => setIsOpen(false)}
               >
-                <span className="text-indigo-500">{item.icon}</span>
+                <span className="text-emerald-500">{item.icon}</span>
                 {item.label}
               </a>
             </li>
